@@ -12,6 +12,7 @@ struct cmd_map {
 void pause(int argc, char **argv);
 void resume(int argc, char **argv);
 void add(int argc, char **argv);
+void add_number(char *num);
 void list(int argc, char **argv);
 void quit(int argc, char **argv);
 

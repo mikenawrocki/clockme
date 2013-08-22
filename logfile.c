@@ -10,7 +10,7 @@
 #define MAXDATELEN 12
 #define LOGDIR "/.clockme/"
 #define LOGEX ".log"
-#define LOGDIRMOD 0755
+#define LOGDIRMOD 0750
 
 FILE *logfile;
 
@@ -37,12 +37,6 @@ void open_log()
 
 	strncpy(logname, getenv("HOME"), PATH_MAX);
 	strcat(logname, LOGDIR);
-	if(mkdir(logname, LOGDIRMOD) < 0) {
-		if(errno != EEXIST) {
-			perror("logging directory");
-			exit(-errno);
-		}
-	}
 	strncat(logname, isodate, MAXDATELEN);
 	strcat(logname, LOGEX);
 

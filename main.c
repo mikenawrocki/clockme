@@ -9,14 +9,16 @@
 #include "cmd_parse.h"
 #include "list.h"
 #include "logfile.h"
+#include "numfile.h"
 
 struct node *charge_num_list_head;
 
 int main(void)
 {
 	char *input;
-	open_log();
 	charge_num_list_head = NULL;
+	read_numbers();
+	open_log();
 	atexit(clear_history);
 	for(;;) {
 		input = readline("(clockme) ");

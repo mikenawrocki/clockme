@@ -7,6 +7,7 @@
 
 #include "cmd_handlers.h"
 #include "list.h"
+#include "numfile.h"
 
 void pause(int argc, char **argv)
 {
@@ -18,7 +19,7 @@ void pause(int argc, char **argv)
 	do {
 		if(tmp->data.status == status_active) {
 			tmp->data.status = status_paused;
-			tmp->data.seconds_elapsed = (long)difftime(time(NULL),
+			tmp->data.seconds_elapsed += (long)difftime(time(NULL),
 				tmp->data.start_time);
 			printf("Pausing charge number %s\n", tmp->data.num);
 			return;
@@ -33,6 +34,7 @@ static void activate_num(char *num)
 	struct node *tmp = charge_num_list_head;
 	struct charge_num *data;
 	char found = 0;
+	int order = atoi(num);
 	if(!tmp || !num) {
 		fprintf(stderr, "Error! No charge numbers entered.");
 		return;
@@ -40,7 +42,7 @@ static void activate_num(char *num)
 
 	do {
 		data = &(tmp->data);
-		if(!strcmp(data->num, num)) {
+		if(!order--) {
 			data->status = status_active;
 			data->start_time = time(NULL);
 			printf("Resuming charge number: %s\n",data->num);
@@ -93,29 +95,36 @@ void resume(int argc, char **argv)
 
 void add(int argc, char **argv)
 {
+	add_number(argv[1]);
+	write_number(argv[1]);
+}
+
+void add_number(char *num)
+{
 	struct node *new_node = malloc(sizeof(struct node));
 
-	strncpy(new_node->data.num, argv[1], 50);
+	strncpy(new_node->data.num, num, 72);
 	new_node->data.num[49] = '\0';
 	new_node->data.seconds_elapsed = 0;
-	new_node->data.start_time = time(NULL);
-	new_node->data.status = status_active;
-	new_node->next = NULL;
+	new_node->data.start_time = 0;
+	new_node->data.status = status_inactive;
+	new_node->next = charge_num_list_head;
 
-	struct node *tmp = charge_num_list_head;
-	struct charge_num *data;
-	if(tmp) {
-		do {
-			data = &(tmp->data);
-			if(data->status == status_active) {
-				data->status = status_inactive;
-				data->seconds_elapsed += (long)difftime(time(NULL),
-						data->start_time);
-			}
-		 } while(tmp->next && (tmp = tmp->next));
-		tmp->next = new_node;
-	} else {
-		charge_num_list_head = new_node;
+	charge_num_list_head = new_node;
+}
+
+static void print_charge_status(struct charge_num *num)
+{
+	switch(num->status) {
+	case status_active:
+		printf("[a]");
+		break;
+	case status_inactive:
+		printf("[ ]");
+		break;
+	case status_paused:
+		printf("[p]");
+		break;
 	}
 }
 
@@ -123,13 +132,15 @@ void list(int argc, char **argv)
 {
 	double elapsed;
 	struct node *tmp = charge_num_list_head;
+	int cur = 0;
 	while(tmp) {
 		elapsed = (double)tmp->data.seconds_elapsed;
 		if(tmp->data.status == status_active)
 			elapsed += difftime(time(NULL), tmp->data.start_time);
 		elapsed /= 60*60;
-		printf("Charge %s : %03.3f hrs\n", 
-				tmp->data.num, elapsed);
+		print_charge_status(&(tmp->data));
+		printf("(%d) %03.3f hrs : Charge %s\n", 
+				cur++, elapsed, tmp->data.num);
 		tmp = tmp->next;
 	}
 }
