@@ -1,4 +1,4 @@
-CFLAGS= -Wall -std=gnu99
+CFLAGS= -Wall -std=gnu99 -g
 LFLAGS= -lreadline
 OBJFILES=main.o cmd_handlers.o cmd_parse.o logfile.o numfile.o
 CC=gcc

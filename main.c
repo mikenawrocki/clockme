@@ -17,6 +17,7 @@ int main(void)
 {
 	char *input;
 	charge_num_list_head = NULL;
+	initialize_rl_completion();
 	read_numbers();
 	open_log();
 	atexit(clear_history);

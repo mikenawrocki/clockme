@@ -4,5 +4,6 @@
 #define LEN(x) (sizeof(x) / sizeof(x[0]))
 
 void cmd_parse(char *cmd);
+void initialize_rl_completion();
 
 #endif
