@@ -95,6 +95,10 @@ void resume(int argc, char **argv)
 
 void add(int argc, char **argv)
 {
+	if(argc < 2 || argc > 3) {
+		printf("Invalid Arguments for charge number add.\n");
+		return;
+	}
 	add_number(argv[1]);
 	write_number(argv[1]);
 }
