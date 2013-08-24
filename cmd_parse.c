@@ -31,10 +31,20 @@ static void make_args(int *argc, char ***argv, char *args)
 		str_arg = strtok(NULL, " ");
 	}
 }
+static void (*find_cmd(char *cmd))(int, char**)
+{
+	int i;
+	for(i = 0; i < LEN(commands); i++) {
+		if(!strcmp(commands[i].cmd_str, cmd)) {
+			return commands[i].func;
+		}
+	}
+	return NULL;
+}
 
 void cmd_parse(char *cmd)
 {
-	int i,argc;
+	int argc;
 	char **argv;
 	if(!cmd) {
 		printf("quit\n");
@@ -46,11 +56,11 @@ void cmd_parse(char *cmd)
 		return;
 	}
 
-	for(i = 0; i < LEN(commands); i++) {
-		if(!strcmp(commands[i].cmd_str, argv[0])) {
-			commands[i].func(argc,argv);
-		}
-	}
+	cmd_func command = find_cmd(argv[0]);
+	if(command)
+		command(argc, argv);
+	else
+		printf("%s : Command not found!\n", argv[0]);
 
 	free(argv);
 }

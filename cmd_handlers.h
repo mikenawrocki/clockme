@@ -1,12 +1,14 @@
 #ifndef CMD_HANDLERS_H
 #define CMD_HANDLERS_H
 
+typedef void (*cmd_func)(int, char**);
+
 extern struct node *charge_num_list_head;
 extern FILE *logfile;
 
 struct cmd_map {
 	const char *cmd_str;
-	void (*func)(int argc, char **argv);
+	const cmd_func func;
 };
 
 void pause(int argc, char **argv);
