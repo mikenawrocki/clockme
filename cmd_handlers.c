@@ -128,36 +128,43 @@ static void print_charge_status(struct charge_num *num)
 	}
 }
 
-void list(int argc, char **argv)
+static void write_times_formatted(FILE *out, int logging)
 {
-	double elapsed;
+	double elapsed, total_elapsed = 0.0;
 	struct node *tmp = charge_num_list_head;
 	int cur = 0;
+
 	while(tmp) {
 		elapsed = (double)tmp->data.seconds_elapsed;
 		if(tmp->data.status == status_active)
 			elapsed += difftime(time(NULL), tmp->data.start_time);
 		elapsed /= 60*60;
-		print_charge_status(&(tmp->data));
-		printf("(%d) %03.3f hrs : Charge %s\n", 
-				cur++, elapsed, tmp->data.num);
+		total_elapsed += elapsed;
+
+		if(!logging) {
+			print_charge_status(&(tmp->data));
+			fprintf(out, "(%d) %03.3f hrs : Charge %s\n", 
+					cur++, elapsed, tmp->data.num);
+		}
+		else {
+			fprintf(out, "Charge %s : %03.3f hrs\n", 
+					tmp->data.num, elapsed);
+		}
+
 		tmp = tmp->next;
 	}
+
+	fprintf(out, "Total: %03.3f hrs\n", total_elapsed);
+}
+
+void list(int argc, char **argv)
+{
+	write_times_formatted(stdout, 0);
 }
 
 static void write_log(void)
 {
-	double elapsed;
-	struct node *tmp = charge_num_list_head;
-	while(tmp) {
-		elapsed = (double)tmp->data.seconds_elapsed;
-		if(tmp->data.status == status_active)
-			elapsed += difftime(time(NULL), tmp->data.start_time);
-		elapsed /= 60*60;
-		fprintf(logfile, "Charge %s : %03.3f hrs\n", 
-				tmp->data.num, elapsed);
-		tmp = tmp->next;
-	}
+	write_times_formatted(logfile, 1);
 }
 
 void quit(int argc, char **argv)
