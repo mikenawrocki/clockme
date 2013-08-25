@@ -17,4 +17,5 @@ clockme: $(OBJFILES)
 .PHONY: clean
 
 clean:
-	rm -f ${OBJFILES} clockme
+	@echo "[CLEAN] Removing object files and binary..."
+	@rm -f ${OBJFILES} clockme
