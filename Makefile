@@ -1,11 +1,12 @@
 CFLAGS= -Wall -std=gnu99 -g
 LFLAGS= -lreadline
 SRCDIR= src
+BUILD_DIR= build
 SRCFILES= $(wildcard $(SRCDIR)/*.c)
-OBJFILES= $(patsubst %.c, %.o, $(SRCFILES))
+OBJFILES= $(SRCFILES:$(SRCDIR)/%.c=$(BUILD_DIR)/%.o)
 CC=gcc
 
-%.o : %.c
+$(BUILD_DIR)/%.o : $(SRCDIR)/%.c
 	@echo "[CC] Building $< ..."
 	@$(CC) $(CFLAGS) -c -o $@ $< -g
 
