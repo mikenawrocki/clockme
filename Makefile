@@ -1,6 +1,8 @@
 CFLAGS= -Wall -std=gnu99 -g
 LFLAGS= -lreadline
-OBJFILES=main.o cmd_handlers.o cmd_parse.o logfile.o numfile.o
+SRCDIR= src
+SRCFILES= $(wildcard $(SRCDIR)/*.c)
+OBJFILES= $(patsubst %.c, %.o, $(SRCFILES))
 CC=gcc
 
 %.o : %.c
@@ -14,4 +16,4 @@ clockme: $(OBJFILES)
 .PHONY: clean
 
 clean:
-	rm -f *.o clockme
+	rm -f ${OBJFILES} clockme
